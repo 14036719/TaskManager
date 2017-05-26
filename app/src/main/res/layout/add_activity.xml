@@ -32,6 +32,20 @@
         android:inputType="textPersonName"
         android:text="" />
 
+    <TextView
+        android:id="@+id/tvRemind"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Remind" />
+
+    <EditText
+        android:id="@+id/etRemind"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

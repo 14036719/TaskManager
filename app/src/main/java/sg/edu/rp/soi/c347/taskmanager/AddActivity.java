@@ -13,14 +13,8 @@ import android.widget.Toast;
 
 import java.util.Calendar;
 
-import static android.R.id.content;
-
-/**
- * Created by 14036719 on 26/5/2017.
- */
-
 public class AddActivity extends AppCompatActivity {
-    EditText etName, etDescription;
+    EditText etName, etDescription, etRemind;
     Button btnAddTask, btnCancel;
     int reqCode = 12345;
 
@@ -32,44 +26,30 @@ public class AddActivity extends AppCompatActivity {
 
         etName = (EditText)findViewById(R.id.etName);
         etDescription = (EditText)findViewById(R.id.etDescription);
-
+        etRemind = (EditText)findViewById(R.id.etRemind);
         btnAddTask = (Button)findViewById(R.id.btnAddTask);
         btnCancel = (Button)findViewById(R.id.btnCancel);
 
         btnAddTask.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
+                DBHelper dbh = new DBHelper(AddActivity.this);
                 String name = etName.getText().toString();
-                String description = etDescription.getText().toString();
-
-                DBHelper db = new DBHelper(AddActivity.this);
-
-                db.insertTask(new Task(id,name,description));
-                Toast.makeText(AddActivity.this, "Inserted", Toast.LENGTH_SHORT).show();
-                db.close();
-
+                String des = etDescription.getText().toString();
+                int remind = Integer.parseInt(etRemind.getText().toString());
+                dbh.insertTask(name, des);
 
                 Calendar cal = Calendar.getInstance();
-                cal.add(Calendar.SECOND, 5);
+                cal.add(Calendar.SECOND, remind);
 
-                Intent intent = new Intent(AddActivity.this,
-                        TaskBroadcastReceiver.class);
-                intent.putExtra("name",name);
-                intent.putExtra("content",content);
+                Intent i = new Intent(AddActivity.this, TaskBroadcastReceiver.class);
+                i.putExtra("name", name);
+                i.putExtra("description", des);
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(AddActivity.this, reqCode, i, PendingIntent.FLAG_CANCEL_CURRENT);
 
-                PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                        AddActivity.this, reqCode,
-                        intent, PendingIntent.FLAG_CANCEL_CURRENT);
-
-                AlarmManager am = (AlarmManager)
-                        getSystemService(Activity.ALARM_SERVICE);
-
-                am.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(),
-                        pendingIntent);
-
-                Intent returnIntent = new Intent();
-                setResult(RESULT_OK,returnIntent);
+                AlarmManager am = (AlarmManager) getSystemService(Activity.ALARM_SERVICE);
+                am.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pendingIntent);
+                setResult(RESULT_OK);
                 finish();
             }
         });
@@ -77,10 +57,9 @@ public class AddActivity extends AppCompatActivity {
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent returnIntent = new Intent();
-                setResult(RESULT_OK,returnIntent);
+                setResult(RESULT_OK);
                 finish();
             }
         });
     }
-        }
+}
